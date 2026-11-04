@@ -1,3 +1,4 @@
+import BTHIDKit
 import CoreBluetooth
 import SwiftUI
 #if os(macOS)
@@ -8,8 +9,8 @@ struct SetupView: View {
     @EnvironmentObject private var lowEnergy: HIDPeripheral
     @EnvironmentObject private var central: HIDCentral
     @EnvironmentObject private var names: DeviceNameStore
-    @AppStorage(AppSettings.developerModeKey) private var developerMode = false
-    @AppStorage(AppSettings.advertisedNameKey) private var advertisedName = L10n.Bluetooth.advertisedName
+    @AppStorage(HIDSettings.developerModeKey) private var developerMode = false
+    @AppStorage(HIDSettings.advertisedNameKey) private var advertisedName = L10n.Bluetooth.advertisedName
     @State private var selectedInfo: DeviceEntry?
     #if os(macOS)
         @State private var showBluetoothOff = false
@@ -17,14 +18,14 @@ struct SetupView: View {
     @EnvironmentObject private var directInput: DirectInputController
     #if os(macOS)
         @EnvironmentObject private var classic: HIDClassicDevice
-        @AppStorage("BTRemote.macTransportMode") private var modeRaw: String = TransportMode.defaultMode.rawValue
+        @AppStorage(AppSettings.transportKey) private var transport = Transport.lowEnergy
     #endif
 
     @Environment(\.hid) private var hid
 
-    private var classicMode: Bool {
+    private var isClassic: Bool {
         #if os(macOS)
-            return (TransportMode(rawValue: modeRaw) ?? .defaultMode) == .classic
+            return transport == .classic
         #else
             return false
         #endif
@@ -56,9 +57,9 @@ struct SetupView: View {
         Form {
             guideSection
             #if os(macOS)
-                transportModeSection
+                transportSection
             #endif
-            if classicMode {
+            if isClassic {
                 #if os(macOS)
                     pairedDevicesSection
                 #endif
@@ -104,13 +105,13 @@ struct SetupView: View {
     }
 
     #if os(macOS)
-        private var transportModeSection: some View {
+        private var transportSection: some View {
             Section {
-                Text(classicMode ? L10n.TransportMode.classicCompatibility : L10n.TransportMode.lowEnergyCompatibility)
+                Text(isClassic ? L10n.TransportMode.classicCompatibility : L10n.TransportMode.lowEnergyCompatibility)
                     .font(.caption).foregroundColor(.secondary)
-                Picker(selection: $modeRaw) {
-                    Text(L10n.TransportMode.lowEnergy).tag(TransportMode.lowEnergy.rawValue)
-                    Text(L10n.TransportMode.classic).tag(TransportMode.classic.rawValue)
+                Picker(selection: $transport) {
+                    Text(L10n.TransportMode.lowEnergy).tag(Transport.lowEnergy)
+                    Text(L10n.TransportMode.classic).tag(Transport.classic)
                 } label: {
                     Text(L10n.TransportMode.label)
                 }
@@ -123,13 +124,13 @@ struct SetupView: View {
 
     private var statusSection: some View {
         Section(header: Text(L10n.Section.status)) {
-            if classicMode {
+            if isClassic {
                 #if os(macOS)
                     row(L10n.Status.bluetooth, Text(classic.state.localizedLabel))
                     row(L10n.Classic.ready, Text(classic.isReady ? L10n.Value.yes : L10n.Value.no))
                     if developerMode {
                         row(L10n.Classic.sdpPublished, Text(classic.isSDPPublished ? L10n.Value.yes : L10n.Value.no))
-                        row(L10n.Status.hostLEDs, Text(verbatim: classic.keyboardLEDs.localizedLabel))
+                        (classic.profile as? Combo).map(HostLEDsRow.init)
                     }
                 #else
                     EmptyView()
@@ -142,7 +143,7 @@ struct SetupView: View {
                     row(L10n.Status.hidService, Text(lowEnergy.isHIDServiceAdded ? L10n.Status.hidServiceAdded : L10n.Value.none))
                     row(L10n.Status.subscribedCentrals, Text(lowEnergy.subscribedCentrals.count, format: .number))
                     row(L10n.Status.connectedPeripherals, Text(central.connected.count, format: .number))
-                    row(L10n.Status.hostLEDs, Text(verbatim: lowEnergy.keyboardLEDs.localizedLabel))
+                    (lowEnergy.profile as? Combo).map(HostLEDsRow.init)
                 }
             }
         }
@@ -168,7 +169,7 @@ struct SetupView: View {
 
     private func _applyAdvertisedName() {
         if advertisedName.isEmpty { advertisedName = L10n.Bluetooth.advertisedName }
-        lowEnergy.advertiseLocalName = advertisedName
+        lowEnergy.advertisedName = advertisedName
         guard lowEnergy.isAdvertising else { return }
         lowEnergy.stop()
         lowEnergy.start()
@@ -204,7 +205,6 @@ struct SetupView: View {
         }
     }
 
-    /// hosts that connected to us (peripheral role); subscribed ones can receive input
     private var _connectedDevices: [DeviceEntry] {
         lowEnergy.connectedCentrals
             .map { uuid in
@@ -269,7 +269,7 @@ struct SetupView: View {
                 Text(L10n.Classic.pairFromSystemSettings)
                     .font(.caption).foregroundColor(.secondary)
                 Button {
-                    _ = classic.presentPairingPicker()
+                    _ = classic.presentPairingPicker(title: L10n.Classic.pairWindowTitle, message: L10n.Classic.pairWindowDescription)
                 } label: {
                     Label(L10n.Classic.pairNewDevice, systemImage: "plus.circle")
                 }
@@ -379,13 +379,21 @@ struct SetupView: View {
             )
         }
     #endif
+}
 
-    private func row(_ title: LocalizedStringKey, _ value: Text) -> some View {
-        HStack {
-            Text(title)
-            Spacer()
-            value.foregroundColor(.secondary)
-        }
+private func row(_ title: LocalizedStringKey, _ value: Text) -> some View {
+    HStack {
+        Text(title)
+        Spacer()
+        value.foregroundColor(.secondary)
+    }
+}
+
+private struct HostLEDsRow: View {
+    @ObservedObject var combo: Combo
+
+    var body: some View {
+        row(L10n.Status.hostLEDs, Text(verbatim: combo.keyboardLEDs.localizedLabel))
     }
 }
 
@@ -429,16 +437,16 @@ private extension KeyboardLEDs {
     #Preview {
         #if os(iOS)
             SetupView()
-                .environmentObject(HIDPeripheral())
+                .environmentObject(HIDPeripheral(profile: Combo()))
                 .environmentObject(HIDCentral())
                 .environmentObject(DeviceNameStore())
                 .environmentObject(DirectInputController())
         #else
             SetupView()
-                .environmentObject(HIDPeripheral())
+                .environmentObject(HIDPeripheral(profile: Combo()))
                 .environmentObject(HIDCentral())
                 .environmentObject(DeviceNameStore())
-                .environmentObject(HIDClassicDevice())
+                .environmentObject(HIDClassicDevice(profile: Combo()))
                 .environmentObject(DirectInputController())
         #endif
     }

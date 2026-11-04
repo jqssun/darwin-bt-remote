@@ -229,10 +229,6 @@ enum L10n {
             "device.empty_state"
         }
 
-        static var unknownName: String {
-            String(localized: "device.unknown_name")
-        }
-
         static var unknownManufacturer: String {
             String(localized: "device.unknown_manufacturer")
         }
@@ -594,10 +590,6 @@ extension L10n {
 
         static var pairWindowTitle: String {
             String(localized: "classic.pair_window.title")
-        }
-
-        static var pairWindowHeader: String {
-            String(localized: "classic.pair_window.header")
         }
 
         static var pairWindowDescription: String {

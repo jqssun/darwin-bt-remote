@@ -3,7 +3,6 @@ import SwiftUI
 let groupFill = Color.secondary.opacity(0.16)
 let cellGap: CGFloat = 6
 
-/// fires once on press and once on release; shared by hold-to-send controls
 struct PressGesture: ViewModifier {
     let onPress: () -> Void
     let onRelease: () -> Void

@@ -21,7 +21,6 @@
         private var sendMouse: ((MouseReport) -> Void)?
         private var onRelease: (() -> Void)?
 
-        /// capture input and route it to HID backend
         func start(_ hid: HIDInput) {
             start(sendKeyboard: hid.sendKeyboard, sendMouse: hid.sendMouse, onRelease: {})
         }
@@ -131,7 +130,7 @@
             onRelease = nil
         }
 
-        /// menu bar warning shown while capturing, since the cursor is hidden and the window is unreachable
+        /// shown while capturing since cursor is hidden
         private func showStatusItem() {
             let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
             if let button = item.button {
@@ -332,7 +331,7 @@
         private var modifiers: KeyboardModifiers = []
         private var observers: [NSObjectProtocol] = []
 
-        // GCMouse deltas are in points; tune on-device
+        // GCMouse deltas are in points
         private static let sensitivity: CGFloat = 1
         private static let scrollSensitivity: CGFloat = 1
 
@@ -417,7 +416,7 @@
             }
         }
 
-        /// GCKeyCode raw values are HID usage IDs; 0xE0...0xE7 are modifier keys
+        /// GCKeyCode raw values are HID usages
         private func handleKey(raw: Int, pressed: Bool) {
             if (0xE0 ... 0xE7).contains(raw) {
                 let mod = KeyboardModifiers(rawValue: UInt8(1) << UInt8(raw - 0xE0))
@@ -441,7 +440,7 @@
 
         private func handleMove(dx: Float, dy: Float) {
             let mx = HIDInput.clamp(CGFloat(dx) * Self.sensitivity)
-            let my = HIDInput.clamp(CGFloat(-dy) * Self.sensitivity) // GC y is up-positive, HID is down-positive
+            let my = HIDInput.clamp(CGFloat(-dy) * Self.sensitivity) // GC y is up-positive but HID down-positive
             guard mx != 0 || my != 0 else { return }
             sendMouse?(MouseReport(buttons: pressedMouseButtons, dX: mx, dY: my))
         }
@@ -480,7 +479,7 @@
         }
     }
 
-    /// iPadOS pointer lock hides system pointer so GameController receives raw deltas
+    /// pointer lock gives GameController raw deltas
     struct PointerLockHost: UIViewControllerRepresentable {
         var locked: Bool
 

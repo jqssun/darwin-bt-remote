@@ -1,14 +1,10 @@
+import BTHIDKit
 import SwiftUI
 
 struct GuideView: View {
-    enum Transport {
-        case lowEnergy
-        case classic
-    }
-
     let transport: Transport
 
-    @AppStorage(AppSettings.advertisedNameKey) private var advertisedName = L10n.Bluetooth.advertisedName
+    @AppStorage(HIDSettings.advertisedNameKey) private var advertisedName = L10n.Bluetooth.advertisedName
 
     var body: some View {
         Form {

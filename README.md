@@ -44,8 +44,8 @@ The app includes two HID backends and picks the right one depending on platform:
 
 | backend | profile | platform | path | description |
 |---|---|---|---|---|
-| Bluetooth Classic | HID Profile | macOS | [`BTRemote/Classic`](BTRemote/Classic) | IOBluetooth SDP record with L2CAP control and interrupt channels |
-| Bluetooth Low Energy | HID over GATT Profile | macOS, iOS | [`BTRemote/LowEnergy`](BTRemote/LowEnergy) | CoreBluetooth peripheral exposing the HID service |
+| Bluetooth Classic | HID Profile | macOS | [`BTHIDKit/Classic`](BTHIDKit/Sources/BTHIDKit/Classic) | IOBluetooth SDP record with L2CAP control and interrupt channels |
+| Bluetooth Low Energy | HID over GATT Profile | macOS, iOS | [`BTHIDKit/LowEnergy`](BTHIDKit/Sources/BTHIDKit/LowEnergy) | CoreBluetooth peripheral exposing the HID service |
 
 Both backends emit the same HID report descriptors, supporting HID usages for `mouse` (relative mouse input with scroll wheel), `keyboard` (with LED output reports for state indicators), `consumerControl` (for multimedia keys), and `systemControl` (including power and sleep management).
 

@@ -1,0 +1,105 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "classic.pair_window.header": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select a device to pair"
+          }
+        }
+      }
+    },
+    "device.unknown_name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown Device"
+          }
+        }
+      }
+    },
+    "error.device_not_paired": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is not paired. Pair it from System Settings first."
+          }
+        }
+      }
+    },
+    "error.failed_to_connect": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to connect: %@"
+          }
+        }
+      }
+    },
+    "error.open_connection_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to open ACL connection (%@)."
+          }
+        }
+      }
+    },
+    "error.open_l2cap_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to open L2CAP channel PSM %@ (%@)."
+          }
+        }
+      }
+    },
+    "error.peripheral_not_retained": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peripheral %@ is no longer available to iOS."
+          }
+        }
+      }
+    },
+    "error.sdp_publish_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to publish Bluetooth HID service record."
+          }
+        }
+      }
+    },
+    "error.write_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to send HID report (%@)."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -1,3 +1,4 @@
+import BTHIDKit
 import SwiftUI
 
 private struct ConsumerButton {
@@ -22,7 +23,7 @@ struct RemoteView: View {
     let goToSetup: () -> Void
 
     @Environment(\.hid) private var hid
-    @AppStorage(AppSettings.developerModeKey) private var developerMode = false
+    @AppStorage(HIDSettings.developerModeKey) private var developerMode = false
 
     var body: some View {
         if hid.isActive || developerMode {

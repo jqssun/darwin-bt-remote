@@ -1,3 +1,4 @@
+import BTHIDKit
 import SwiftUI
 
 struct ContentView: View {
@@ -111,15 +112,15 @@ struct ContentView: View {
     #Preview {
         #if os(iOS)
             ContentView()
-                .environmentObject(HIDPeripheral())
+                .environmentObject(HIDPeripheral(profile: Combo()))
                 .environmentObject(HIDCentral())
                 .environmentObject(DeviceNameStore())
         #else
             ContentView()
-                .environmentObject(HIDPeripheral())
+                .environmentObject(HIDPeripheral(profile: Combo()))
                 .environmentObject(HIDCentral())
                 .environmentObject(DeviceNameStore())
-                .environmentObject(HIDClassicDevice())
+                .environmentObject(HIDClassicDevice(profile: Combo()))
         #endif
     }
 #endif

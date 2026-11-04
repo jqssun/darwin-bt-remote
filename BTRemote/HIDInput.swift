@@ -1,3 +1,4 @@
+import BTHIDKit
 import CoreGraphics
 import Foundation
 import SwiftUI
@@ -5,16 +6,25 @@ import SwiftUI
     import UIKit
 #endif
 
-/// routes UI input to the active HID backend
 struct HIDInput {
-    let sendMouse: (MouseReport) -> Void
-    let sendKeyboard: (KeyboardReport) -> Void
-    let sendConsumer: (ConsumerReport) -> Void
+    let send: (UInt8, Data) -> Void
     let updateBattery: (UInt8) -> Void
     let isActive: Bool
     let isConnected: Bool
     let activeError: String?
     let batteryLevel: UInt8
+
+    func sendMouse(_ report: MouseReport) {
+        send(ReportID.mouse.rawValue, report.data)
+    }
+
+    func sendKeyboard(_ report: KeyboardReport) {
+        send(ReportID.keyboard.rawValue, report.data)
+    }
+
+    func sendConsumer(_ report: ConsumerReport) {
+        send(ReportID.consumerControl.rawValue, report.data)
+    }
 
     func tap(_ key: Keycode, modifiers: KeyboardModifiers = []) {
         sendKeyboard(KeyboardReport(modifiers: modifiers, keys: [key]))
@@ -46,7 +56,7 @@ struct HIDInput {
         sendKeyboard(.zero)
     }
 
-    /// down + up reports for one character (empty if unmappable); paced by the caller
+    /// empty if unmappable
     static func keyReports(for character: Character, adding modifiers: KeyboardModifiers = []) -> [KeyboardReport] {
         guard let (key, mods) = mapASCII(character) else { return [] }
         return [KeyboardReport(modifiers: mods.union(modifiers), keys: [key]), .zero]
@@ -72,12 +82,10 @@ struct HIDInput {
 extension HIDInput {
     #if os(macOS)
         @MainActor
-        static func make(lowEnergy: HIDPeripheral, central: HIDCentral, classic: HIDClassicDevice, classicMode: Bool) -> HIDInput {
-            guard classicMode else { return _lowEnergy(lowEnergy, central) }
+        static func make(lowEnergy: HIDPeripheral, central: HIDCentral, classic: HIDClassicDevice, transport: Transport) -> HIDInput {
+            guard transport == .classic else { return _lowEnergy(lowEnergy, central) }
             return HIDInput(
-                sendMouse: { classic.sendMouse($0) },
-                sendKeyboard: { classic.sendKeyboard($0) },
-                sendConsumer: { classic.sendConsumer($0) },
+                send: { classic.send($0, $1) },
                 updateBattery: { classic.updateBatteryLevel($0) },
                 isActive: classic.isSDPPublished,
                 isConnected: classic.connectedAddress != nil,
@@ -94,7 +102,7 @@ extension HIDInput {
 
     static var unavailable: HIDInput {
         HIDInput(
-            sendMouse: { _ in }, sendKeyboard: { _ in }, sendConsumer: { _ in }, updateBattery: { _ in },
+            send: { _, _ in }, updateBattery: { _ in },
             isActive: false, isConnected: false, activeError: nil, batteryLevel: 0
         )
     }
@@ -102,9 +110,7 @@ extension HIDInput {
     @MainActor
     private static func _lowEnergy(_ lowEnergy: HIDPeripheral, _ central: HIDCentral) -> HIDInput {
         HIDInput(
-            sendMouse: { lowEnergy.sendMouse($0) },
-            sendKeyboard: { lowEnergy.sendKeyboard($0) },
-            sendConsumer: { lowEnergy.sendConsumer($0) },
+            send: { lowEnergy.send($0, $1) },
             updateBattery: { lowEnergy.updateBatteryLevel($0) },
             isActive: lowEnergy.isHIDServiceAdded,
             isConnected: lowEnergy.connectedCentrals.contains { !lowEnergy.inactiveCentrals.contains($0) } || !central.connected.isEmpty,
@@ -114,15 +120,8 @@ extension HIDInput {
     }
 }
 
-private struct HIDInputKey: EnvironmentKey {
-    static var defaultValue: HIDInput { .unavailable }
-}
-
 extension EnvironmentValues {
-    var hid: HIDInput {
-        get { self[HIDInputKey.self] }
-        set { self[HIDInputKey.self] = newValue }
-    }
+    @Entry var hid: HIDInput = .unavailable
 }
 
 enum Haptics {
@@ -134,7 +133,7 @@ enum Haptics {
     }
 }
 
-/// US-layout ASCII to keycode/modifier mapping
+/// US layout
 private func mapASCII(_ character: Character) -> (Keycode, KeyboardModifiers)? {
     if let a = character.asciiValue {
         if a >= 0x61, a <= 0x7A, let key = Keycode(rawValue: 0x04 + (a - 0x61)) { return (key, []) } // a..z

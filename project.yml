@@ -21,6 +21,10 @@ settings:
     MARKETING_VERSION: "0.0.4"
     CURRENT_PROJECT_VERSION: "4"
 
+packages:
+  BTHIDKit:
+    path: BTHIDKit
+
 targets:
   BTRemote:
     type: application
@@ -36,6 +40,8 @@ targets:
       - BTRemote/PrivacyInfo.xcprivacy
       - BTRemote/Resources/company_ids.json
       - BTRemote/Resources/service_uuids.json
+    dependencies:
+      - package: BTHIDKit
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.github.jqssun.btremote

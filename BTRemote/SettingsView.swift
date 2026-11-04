@@ -1,3 +1,4 @@
+import BTHIDKit
 import SwiftUI
 
 struct SettingsView: View {
@@ -7,8 +8,8 @@ struct SettingsView: View {
     @State private var showReset = false
     @AppStorage(AppSettings.touchpadSensitivityKey) private var touchpadSensitivity = AppSettings.defaultPointerSensitivity
     @AppStorage(AppSettings.scrollSensitivityKey) private var scrollSensitivity = AppSettings.defaultScrollSensitivity
-    @AppStorage(AppSettings.developerModeKey) private var developerMode = false
-    @AppStorage(AppSettings.useServiceChangedKey) private var forceServiceChanged = true
+    @AppStorage(HIDSettings.developerModeKey) private var developerMode = false
+    @AppStorage(HIDSettings.forceServiceChangedKey) private var forceServiceChanged = true
     @AppStorage(AppSettings.hasSeenWelcomeKey) private var hasSeenWelcome = false
     #if os(iOS)
         @AppStorage(AppSettings.autoAdvertiseKey) private var autoAdvertise = true
@@ -111,15 +112,15 @@ struct SettingsView: View {
     #Preview {
         #if os(iOS)
             SettingsView()
-                .environmentObject(HIDPeripheral())
+                .environmentObject(HIDPeripheral(profile: Combo()))
                 .environmentObject(HIDCentral())
                 .environmentObject(DeviceNameStore())
         #else
             SettingsView()
-                .environmentObject(HIDPeripheral())
+                .environmentObject(HIDPeripheral(profile: Combo()))
                 .environmentObject(HIDCentral())
                 .environmentObject(DeviceNameStore())
-                .environmentObject(HIDClassicDevice())
+                .environmentObject(HIDClassicDevice(profile: Combo()))
         #endif
     }
 #endif

@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// circular directional pad: four arc buttons around a center select,
-/// sending consumer-page menu navigation keys
 struct DPadView: View {
     let onPress: (ConsumerReport) -> Void
     let onRelease: () -> Void
@@ -75,7 +73,6 @@ private struct PressableShape<S: Shape>: View {
     }
 }
 
-/// annular sector spanning [start, end] degrees, with a hole that clears the center button
 private struct Wedge: Shape {
     let start: Double
     let end: Double

@@ -1,3 +1,4 @@
+import BTHIDKit
 import CoreBluetooth
 import SwiftUI
 
@@ -76,7 +77,6 @@ struct DeviceListView: View {
         }
     }
 
-    /// peripherals found by scanning (central role)
     private var _devices: [DeviceEntry] {
         central.discovered
             .map { peripheral in
@@ -138,7 +138,7 @@ struct DeviceListView: View {
 #if DEBUG
     #Preview {
         DeviceListView()
-            .environmentObject(HIDPeripheral())
+            .environmentObject(HIDPeripheral(profile: Combo()))
             .environmentObject(HIDCentral())
             .environmentObject(DeviceNameStore())
     }

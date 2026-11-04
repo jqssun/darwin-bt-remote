@@ -1,3 +1,4 @@
+import BTHIDKit
 import SwiftUI
 
 private let keyHeight: CGFloat = 44
@@ -6,7 +7,7 @@ struct KeyboardView: View {
     let goToSetup: () -> Void
 
     @Environment(\.hid) private var hid
-    @AppStorage(AppSettings.developerModeKey) private var developerMode = false
+    @AppStorage(HIDSettings.developerModeKey) private var developerMode = false
     @AppStorage(AppSettings.liveTypingKey) private var liveTyping = true
     @State private var text = ""
     @State private var sent = ""
@@ -210,7 +211,7 @@ struct KeyboardView: View {
         if mods.contains(mod) { mods.subtract(mod) } else { mods.insert(mod) }
     }
 
-    // live typing: diff the field against what was already sent
+    // diff field against what was sent for live typing
 
     private func handleChange(_ new: String) {
         if resetting {
@@ -347,8 +348,7 @@ private final class ArrowRepeater: ObservableObject {
     }
 }
 
-/// paces keyboard reports so each down/up transition is delivered;
-/// without spacing, rapid identical key presses get coalesced and lost.
+/// paces keyboard reports so rapid identical presses do not coalesce
 @MainActor
 private final class KeyTypist: ObservableObject {
     var send: ((KeyboardReport) -> Void)?

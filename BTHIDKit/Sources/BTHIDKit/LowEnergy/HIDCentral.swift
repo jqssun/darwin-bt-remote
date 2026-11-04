@@ -3,29 +3,28 @@ import CoreBluetooth
 import Foundation
 import os
 
-/// central-side scanner and connection-event registrar
 @MainActor
-final class HIDCentral: NSObject, ObservableObject {
-    @Published private(set) var state: CBManagerState = .unknown
-    @Published private(set) var isScanning = false
-    @Published private(set) var discovered: [DiscoveredPeripheral] = []
-    @Published private(set) var connected: Set<UUID> = []
-    @Published private(set) var connecting: Set<UUID> = []
-    @Published private(set) var lastError: String?
+public final class HIDCentral: NSObject, ObservableObject {
+    @Published public private(set) var state: CBManagerState = .unknown
+    @Published public private(set) var isScanning = false
+    @Published public private(set) var discovered: [DiscoveredPeripheral] = []
+    @Published public private(set) var connected: Set<UUID> = []
+    @Published public private(set) var connecting: Set<UUID> = []
+    @Published public private(set) var lastError: String?
 
-    static let restoreIdentifier = "BTRemote.central.v1"
+    static let restoreIdentifier = "central"
 
-    private let log = Logger(subsystem: "io.github.jqssun.btremote", category: "HIDCentral")
+    private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "", category: "HIDCentral")
     private var centralManager: CBCentralManager?
     private var peripheralCache: [UUID: CBPeripheral] = [:]
 
     private func _trace(_ message: @autoclosure () -> String) {
-        guard UserDefaults.standard.bool(forKey: AppSettings.developerModeKey) else { return }
+        guard UserDefaults.standard.bool(forKey: HIDSettings.developerModeKey) else { return }
         let text = message()
         log.info("\(text, privacy: .public)")
     }
 
-    func start() {
+    public func start() {
         guard centralManager == nil else { return }
         centralManager = CBCentralManager(
             delegate: self,
@@ -37,7 +36,7 @@ final class HIDCentral: NSObject, ObservableObject {
         )
     }
 
-    func startScan() {
+    public func startScan() {
         guard let centralManager, centralManager.state == .poweredOn else {
             start()
             return
@@ -51,13 +50,13 @@ final class HIDCentral: NSObject, ObservableObject {
         _trace("scan started")
     }
 
-    func stopScan() {
+    public func stopScan() {
         centralManager?.stopScan()
         isScanning = false
         _trace("scan stopped")
     }
 
-    func connect(_ identifier: UUID) {
+    public func connect(_ identifier: UUID) {
         guard let centralManager else { return }
         let peripheral = peripheralCache[identifier]
             ?? centralManager.retrievePeripherals(withIdentifiers: [identifier]).first
@@ -74,12 +73,12 @@ final class HIDCentral: NSObject, ObservableObject {
         _trace("connect requested: \(peripheral.identifier)")
     }
 
-    func disconnect(_ identifier: UUID) {
+    public func disconnect(_ identifier: UUID) {
         guard let centralManager, let peripheral = peripheralCache[identifier] else { return }
         centralManager.cancelPeripheralConnection(peripheral)
     }
 
-    func refreshKnownPeripherals(servicesFilter: [CBUUID] = [HIDProfile.hidService]) {
+    func refreshKnownPeripherals(servicesFilter: [CBUUID] = [GATT.hidService]) {
         guard let centralManager else { return }
         let known = centralManager.retrieveConnectedPeripherals(withServices: servicesFilter)
         for peripheral in known {
@@ -135,23 +134,23 @@ final class HIDCentral: NSObject, ObservableObject {
     }
 }
 
-struct DiscoveredPeripheral: Identifiable, Equatable {
-    let id: UUID
-    var name: String
-    var isNamed: Bool
-    var rssi: Int
-    var advertisedServices: [CBUUID]
-    var companyID: UInt16?
-    var txPower: Int?
-    var isConnectable: Bool?
+public struct DiscoveredPeripheral: Identifiable, Equatable {
+    public let id: UUID
+    public var name: String
+    public var isNamed: Bool
+    public var rssi: Int
+    public var advertisedServices: [CBUUID]
+    public var companyID: UInt16?
+    public var txPower: Int?
+    public var isConnectable: Bool?
 }
 
 extension HIDCentral: @preconcurrency CBCentralManagerDelegate {
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+    public func centralManagerDidUpdateState(_ central: CBCentralManager) {
         state = central.state
         _trace("central state -> \(central.state.rawValue)")
         if central.state == .poweredOn {
-            // must happen before HID services are added
+            // must happen before HID services added
             #if os(iOS)
                 central.registerForConnectionEvents(options: nil)
             #endif
@@ -164,7 +163,7 @@ extension HIDCentral: @preconcurrency CBCentralManagerDelegate {
         }
     }
 
-    func centralManager(_ central: CBCentralManager, willRestoreState dict: [String: Any]) {
+    public func centralManager(_ central: CBCentralManager, willRestoreState dict: [String: Any]) {
         _trace("central willRestoreState: \(dict.keys.sorted())")
         if let restored = dict[CBCentralManagerRestoredStatePeripheralsKey] as? [CBPeripheral] {
             for peripheral in restored {
@@ -173,7 +172,7 @@ extension HIDCentral: @preconcurrency CBCentralManagerDelegate {
         }
     }
 
-    func centralManager(
+    public func centralManager(
         _ central: CBCentralManager,
         didDiscover peripheral: CBPeripheral,
         advertisementData: [String: Any],
@@ -187,14 +186,14 @@ extension HIDCentral: @preconcurrency CBCentralManagerDelegate {
         )
     }
 
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+    public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         connecting.remove(peripheral.identifier)
         connected.insert(peripheral.identifier)
         _trace("connected: \(peripheral.identifier)")
         peripheralCache[peripheral.identifier] = peripheral
     }
 
-    func centralManager(
+    public func centralManager(
         _ central: CBCentralManager,
         didDisconnectPeripheral peripheral: CBPeripheral,
         error: Error?
@@ -209,7 +208,7 @@ extension HIDCentral: @preconcurrency CBCentralManagerDelegate {
         }
     }
 
-    func centralManager(
+    public func centralManager(
         _ central: CBCentralManager,
         didFailToConnect peripheral: CBPeripheral,
         error: Error?

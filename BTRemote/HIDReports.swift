@@ -34,7 +34,6 @@ struct KeyboardReport: Sendable, Equatable {
     var data: Data {
         var bytes = [UInt8](repeating: 0, count: 8)
         bytes[0] = modifiers.rawValue
-        // bytes[1] reserved
         for (i, key) in keys.prefix(6).enumerated() {
             bytes[2 + i] = key.rawValue
         }
@@ -71,7 +70,6 @@ struct KeyboardLEDs: OptionSet, Sendable, Equatable {
     }
 }
 
-/// USB HID usage page 0x07
 enum Keycode: UInt8, Sendable, Equatable, Hashable {
     case a = 0x04, b, c, d, e, f, g, h, i, j, k, l, m
     case n, o, p, q, r, s, t, u, v, w, x, y, z
@@ -123,7 +121,6 @@ struct SystemActions: OptionSet, Sendable, Equatable {
     static let displayBrightnessDecrement = SystemActions(rawValue: 1 << 7)
 }
 
-/// consumer report (5 bytes)
 struct ConsumerReport: Sendable, Equatable {
     var key: ConsumerKey = .none
     var acUsageA: UInt8 = 0
@@ -144,7 +141,6 @@ struct ConsumerReport: Sendable, Equatable {
     }
 }
 
-/// USB HID usage page 0x0C
 enum ConsumerKey: UInt16, Sendable, Equatable {
     case none = 0x0000
     case playPause = 0x00CD

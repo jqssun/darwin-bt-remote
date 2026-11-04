@@ -23,17 +23,6 @@
         }
       }
     },
-    "action.remove_all_services": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remove All Services"
-          }
-        }
-      }
-    },
     "action.scan_nearby_devices": {
       "extractionState": "manual",
       "localizations": {
@@ -287,17 +276,6 @@
         }
       }
     },
-    "classic.pair_window.header": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select a device to pair"
-          }
-        }
-      }
-    },
     "classic.pair_window.title": {
       "extractionState": "manual",
       "localizations": {
@@ -430,17 +408,6 @@
         }
       }
     },
-    "device.unknown_name": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unknown Device"
-          }
-        }
-      }
-    },
     "device_info.advertisement": {
       "extractionState": "manual",
       "localizations": {
@@ -525,17 +492,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Name"
-          }
-        }
-      }
-    },
-    "device_info.remove_services_hint": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Removes all published HID services and drops every connected host. Tap Start Advertising to republish."
           }
         }
       }
@@ -690,94 +646,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Direct Input"
-          }
-        }
-      }
-    },
-    "error.classic_bond_required": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Device is only LE paired. Pair it from System Settings for Classic mode."
-          }
-        }
-      }
-    },
-    "error.device_not_paired": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ is not paired. Pair it from System Settings first."
-          }
-        }
-      }
-    },
-    "error.failed_to_connect": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed to connect: %@"
-          }
-        }
-      }
-    },
-    "error.open_connection_failed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed to open ACL connection (%@)."
-          }
-        }
-      }
-    },
-    "error.open_l2cap_failed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed to open L2CAP channel PSM 0x%04X (%@)."
-          }
-        }
-      }
-    },
-    "error.peripheral_not_retained": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peripheral %@ is no longer available to iOS."
-          }
-        }
-      }
-    },
-    "error.sdp_publish_failed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed to publish Bluetooth HID service record."
-          }
-        }
-      }
-    },
-    "error.write_failed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed to send HID report (%@)."
           }
         }
       }
