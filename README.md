@@ -20,6 +20,8 @@ Unlike network remote-control tools, it needs nothing installed on the target an
 | **iOS Controller** | <video loop src='https://github.com/user-attachments/assets/7a1853ba-d4b0-4def-97dc-4de5f4a5a114' alt="iOS controlling Android" width="260"></video> | <video loop src='https://github.com/user-attachments/assets/bab84d16-b154-40d4-b9ed-f27c462b67b0' alt="iOS controlling macOS" width="260"></video> | <video loop src='https://github.com/user-attachments/assets/ad35c59a-f1bb-4e09-a53c-2433c37ade7a' alt="iOS controlling Windows" width="260"></video> |
 | **macOS Controller** | <video loop src='https://github.com/user-attachments/assets/da88c42e-680c-43d2-8263-0180486860e0' alt="macOS controlling Android" width="260"></video> | <video loop src='https://github.com/user-attachments/assets/913a7cb7-b9d4-4d33-be6f-0262dc1ea8d2' alt="macOS controlling iOS" width="260"></video> | <video loop src='https://github.com/user-attachments/assets/d29c964a-3d34-400d-bc5d-fe1670c91c29' alt="macOS controlling Windows" width="260"></video> |
 
+On iPhone or iPad, hold the bottom-left mouse button with one finger and slide another finger on the trackpad to drag. Lift the finger on the button to drop.
+
 ## Compatibility
 
 - HID device (controller):

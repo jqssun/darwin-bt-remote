@@ -10,6 +10,7 @@
         var moveSensitivity: CGFloat
         var scrollSensitivity: CGFloat
         var onMove: (Int8, Int8) -> Void
+        var onMoveCancelled: () -> Void
         var onScroll: (Int8) -> Void
         var onLeftClick: () -> Void
         var onRightClick: () -> Void
@@ -51,6 +52,7 @@
             c.moveSensitivity = moveSensitivity
             c.scrollSensitivity = scrollSensitivity
             c.onMove = onMove
+            c.onMoveCancelled = onMoveCancelled
             c.onScroll = onScroll
             c.onLeftClick = onLeftClick
             c.onRightClick = onRightClick
@@ -61,6 +63,7 @@
             var moveSensitivity: CGFloat = 1
             var scrollSensitivity: CGFloat = 1
             var onMove: (Int8, Int8) -> Void = { _, _ in }
+            var onMoveCancelled: () -> Void = {}
             var onScroll: (Int8) -> Void = { _ in }
             var onLeftClick: () -> Void = {}
             var onRightClick: () -> Void = {}
@@ -69,6 +72,11 @@
             private let scrollStep: CGFloat = 6
 
             @objc func handleMove(_ pan: UIPanGestureRecognizer) {
+                if pan.state == .cancelled {
+                    onMoveCancelled()
+                    return
+                }
+                guard pan.state == .began || pan.state == .changed || pan.state == .ended else { return }
                 guard let view = pan.view else { return }
                 let t = pan.translation(in: view)
                 onMove(HIDInput.clamp(t.x * moveSensitivity), HIDInput.clamp(t.y * moveSensitivity))

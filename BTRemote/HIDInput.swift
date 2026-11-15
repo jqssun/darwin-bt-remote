@@ -36,20 +36,6 @@ struct HIDInput {
         sendConsumer(.zero)
     }
 
-    func click(_ button: MouseButtons) {
-        sendMouse(MouseReport(buttons: button))
-        sendMouse(.zero)
-    }
-
-    func move(dx: Int8, dy: Int8) {
-        sendMouse(MouseReport(dX: dx, dY: dy))
-    }
-
-    func scroll(_ wheel: Int8) {
-        sendMouse(MouseReport(wheel: wheel))
-        sendMouse(.zero)
-    }
-
     func type(_ character: Character) {
         guard let (key, mods) = mapASCII(character) else { return }
         sendKeyboard(KeyboardReport(modifiers: mods, keys: [key]))

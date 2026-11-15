@@ -51,6 +51,16 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": BTRemote/entitlements.plist
+  BTRemoteTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [BTRemoteTests]
+    dependencies:
+      - target: BTRemote
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.jqssun.btremote.tests
+        GENERATE_INFOPLIST_FILE: YES
 schemes:
   BTRemote:
     build:
@@ -60,3 +70,10 @@ schemes:
       config: Debug
     archive:
       config: Release
+  BTRemoteTests:
+    build:
+      targets:
+        BTRemote: [test]
+    test:
+      config: Debug
+      targets: [BTRemoteTests]
